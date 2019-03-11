@@ -1,5 +1,5 @@
 # Network-Security
 
-It contains some cheat sheet which I used for performing Buffer Overflow , Integer Overflow and Format String operations.
+It contains some cheat sheet and code which I used for writing and performing Buffer Overflow , Integer Overflow and Format String exploitations.
 
 Step by step description is given in each cheat sheet.
