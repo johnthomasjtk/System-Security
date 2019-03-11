@@ -1,0 +1,13 @@
+gdb --args ./prog arg1 arg2
+gdb --args ./vuln1 $(python exploit1.py)
+
+./vuln1 $(python exploit1.py)
+
+export MYSHELL=`python shellcode.py`
+
+gcc -ggdb -fno-stack-protector -z execstack -o vuln1 vuln1.c 
+
+
+gdb commands
+
+r `python exploit1.py`
